@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>You up for a movie date?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Monoton&family=Poppins:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     🎨 QUICK CUSTOMIZE — change these lines, nothing else needed
+     ============================================================ */
+  :root{
+    --headline-plain: "Are you up for a";
+    --headline-neon:  "MOVIE DATE?";
+    --subtext: "Already lined up, no negotiating. Just say yes.";
+    --movie-1: "Shinchan: The Movie";
+    --movie-2: "Bonolota";
+    --seat-a: "Your screen";
+    --seat-b: "My screen";
+  }
+
+  /* ---------------- design tokens ---------------- */
+  :root{
+    --curtain-1:#1b0a10;
+    --curtain-2:#3a0f1c;
+    --gold:#f0b93d;
+    --gold-light:#ffe49a;
+    --cream:#f7ecd9;
+    --ink:#2a1118;
+    --neon:#ff4f6e;
+    --neon-glow:#ff8ba3;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0; padding:0; min-height:100%;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.05), transparent 60%),
+      repeating-linear-gradient(90deg, var(--curtain-1) 0 18px, var(--curtain-2) 18px 36px);
+    font-family:'Poppins', sans-serif;
+    color: var(--cream);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow-x:hidden;
+  }
+
+  body{
+    min-height:100vh;
+    padding: 28px 14px;
+  }
+
+  /* vignette */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.55) 100%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* ---------------- film reel ---------------- */
+  .reel{
+    position:absolute;
+    top:-26px; left:-26px;
+    width:64px; height:64px;
+    opacity:0.9;
+    animation: spin 9s linear infinite;
+    z-index:3;
+  }
+  .reel.right{ left:auto; right:-26px; animation-duration: 11s; animation-direction: reverse; }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+
+  /* ---------------- marquee frame ---------------- */
+  .marquee-frame{
+    position:relative;
+    padding: 26px;
+    border-radius: 18px;
+    background: linear-gradient(160deg, #2c1219, #190a0f);
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(240,185,61,0.15);
+    z-index:1;
+    width: min(440px, 92vw);
+  }
+
+  .bulb{
+    position:absolute;
+    width:8px; height:8px;
+    border-radius:50%;
+    background: var(--gold-light);
+    box-shadow: 0 0 6px 2px var(--gold);
+    opacity:0.25;
+    animation: chase 1.8s linear infinite;
+  }
+  @keyframes chase{
+    0%, 92%, 100%{ opacity:0.25; }
+    4%, 14%{ opacity:1; box-shadow: 0 0 10px 4px var(--gold-light); }
+  }
+
+  /* ---------------- ticket card ---------------- */
+  .ticket{
+    position:relative;
+    background: var(--cream);
+    color: var(--ink);
+    border-radius: 10px;
+    overflow:hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+
+  .stub{
+    padding: 26px 24px 20px;
+    text-align:center;
+    position:relative;
+  }
+
+  .eyebrow{
+    font-family:'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #8a5a2f;
+    margin: 0 0 14px;
+  }
+
+  .headline{
+    font-family:'Oswald', sans-serif;
+    font-weight:600;
+    font-size: clamp(20px, 5.2vw, 26px);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 2px;
+    line-height:1.15;
+  }
+
+  .neon{
+    display:block;
+    font-family:'Monoton', cursive;
+    font-weight:400;
+    font-size: clamp(28px, 8vw, 40px);
+    letter-spacing: 2px;
+    color: var(--neon);
+    text-shadow:
+      0 0 6px var(--neon-glow),
+      0 0 18px var(--neon),
+      0 0 32px var(--neon);
+    margin-top: 8px;
+    line-height:1.2;
+  }
+
+  .subtext{
+    font-size: 14px;
+    color: #5a3a2a;
+    max-width: 320px;
+    margin: 16px auto 0;
+    line-height:1.5;
+  }
+
+  /* fixed double-feature lineup — display only, nothing to pick */
+  .lineup{
+    display:flex;
+    justify-content:center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 16px auto 0;
+  }
+  .lineup-chip{
+    font-family:'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    background: rgba(42,17,24,0.06);
+    border: 1px solid rgba(42,17,24,0.18);
+    color: var(--ink);
+    padding: 7px 13px;
+    border-radius: 999px;
+    appearance:none;
+    cursor:pointer;
+  }
+  .lineup-chip#movie2{
+    background: rgba(240,185,61,0.25);
+    border-color: #b8841f;
+  }
+  @keyframes shake{
+    10%,90%{ transform: translateX(-1px); }
+    20%,80%{ transform: translateX(2px); }
+    30%,50%,70%{ transform: translateX(-4px); }
+    40%,60%{ transform: translateX(4px); }
+  }
+  .lineup-chip.shake{ animation: shake 0.45s; }
+  .lineup-chip.pulse{ animation: pulse 0.35s; }
+  @keyframes pulse{ 50%{ transform: scale(1.08); } }
+  .lineup-msg{
+    min-height: 16px;
+    font-family:'Space Mono', monospace;
+    font-size: 11px;
+    color: #a07050;
+    margin: 8px 0 0;
+  }
+  .lineup-note{
+    font-family:'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #a07050;
+    margin: 8px 0 0;
+  }
+
+  .wc-link{
+    display:inline-flex;
+    align-items:center;
+    gap: 6px;
+    margin-top: 6px;
+    font-family:'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    color: var(--ink);
+    background: var(--gold-light);
+    border: 1px solid #b8841f;
+    padding: 8px 14px;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: transform 0.15s ease;
+  }
+  .wc-link:hover{ transform: translateY(-2px); }
+  .wc-note{
+    font-size: 11px;
+    color: #a07050;
+    margin: 8px auto 0;
+    max-width: 280px;
+  }
+
+  /* perforation divider */
+  .perf{
+    position:relative;
+    height: 0;
+    border-top: 2px dashed rgba(42,17,24,0.25);
+    margin: 4px 0;
+  }
+  .perf::before, .perf::after{
+    content:"";
+    position:absolute; top:-10px;
+    width:20px; height:20px;
+    border-radius:50%;
+    background: var(--curtain-1);
+  }
+  .perf::before{ left:-34px; }
+  .perf::after{ right:-34px; }
+
+  .info{
+    padding: 22px 24px 26px;
+    text-align:center;
+  }
+
+  .stage{
+    position:relative;
+    height: 110px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  button{
+    font-family:'Oswald', sans-serif;
+    font-weight:600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 999px;
+    cursor:pointer;
+    border:none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  #yesBtn{
+    background: linear-gradient(180deg, var(--gold-light), var(--gold));
+    color: var(--ink);
+    padding: 13px 26px;
+    font-size: 14px;
+    box-shadow: 0 6px 0 #b8841f, 0 10px 18px rgba(0,0,0,0.25);
+  }
+  #yesBtn:hover{ transform: translateY(-2px); }
+  #yesBtn:active{ transform: translateY(2px); box-shadow: 0 2px 0 #b8841f; }
+
+  #noBtn{
+    background: transparent;
+    color: #8a5a2f;
+    border: 2px solid rgba(138,90,47,0.4);
+    padding: 11px 20px;
+    font-size: 13px;
+  }
+  #noBtn.roaming{
+    position:absolute;
+  }
+
+  button:focus-visible{
+    outline: 3px solid var(--neon);
+    outline-offset: 2px;
+  }
+
+  .dodge-msg{
+    min-height: 18px;
+    font-family:'Space Mono', monospace;
+    font-size: 12px;
+    color: #a07050;
+    margin-top: 14px;
+    transition: opacity 0.2s ease;
+  }
+
+  .barcode{
+    margin-top: 18px;
+    height: 28px;
+    background: repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 5px);
+    opacity: 0.65;
+  }
+  .admit{
+    font-family:'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #8a5a2f;
+    margin-top: 8px;
+  }
+
+  /* ---------------- confirmation panel ---------------- */
+  .confirm{
+    display:none;
+    text-align:center;
+    padding: 32px 24px 30px;
+  }
+  .confirm.show{ display:block; animation: pop 0.4s ease; }
+  @keyframes pop{ from{ transform: scale(0.85); opacity:0; } to{ transform: scale(1); opacity:1; } }
+
+  .confirm h2{
+    font-family:'Oswald', sans-serif;
+    font-size: clamp(22px, 6vw, 28px);
+    text-transform: uppercase;
+    margin: 6px 0 10px;
+  }
+  .confirm p{
+    font-size: 14px;
+    color: #5a3a2a;
+    max-width: 300px;
+    margin: 0 auto 18px;
+    line-height:1.5;
+  }
+  .seats{
+    display:flex;
+    justify-content:center;
+    gap: 14px;
+    margin: 6px 0 20px;
+  }
+  .seat{
+    font-family:'Space Mono', monospace;
+    background: var(--ink);
+    color: var(--gold-light);
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+
+  /* confetti */
+  .confetti-piece{
+    position:fixed;
+    top:-30px;
+    font-size: 20px;
+    z-index: 50;
+    animation: fall linear forwards;
+    pointer-events:none;
+  }
+  @keyframes fall{
+    to{ transform: translateY(110vh) rotate(360deg); opacity:0.9; }
+  }
+
+  footer{
+    text-align:center;
+    margin-top: 18px;
+    font-family:'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: rgba(247,236,217,0.4);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .reel{ animation:none; }
+    .bulb{ animation:none; opacity:0.8; }
+    .confetti-piece{ animation:none; display:none; }
+    .confirm.show{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="marquee-frame" id="frame">
+    <svg class="reel" viewBox="0 0 64 64" aria-hidden="true">
+      <circle cx="32" cy="32" r="30" fill="none" stroke="#f0b93d" stroke-width="3" opacity="0.7"/>
+      <circle cx="32" cy="32" r="6" fill="#f0b93d" opacity="0.7"/>
+      <circle cx="32" cy="10" r="6" fill="#f0b93d" opacity="0.7"/>
+      <circle cx="32" cy="54" r="6" fill="#f0b93d" opacity="0.7"/>
+      <circle cx="10" cy="32" r="6" fill="#f0b93d" opacity="0.7"/>
+      <circle cx="54" cy="32" r="6" fill="#f0b93d" opacity="0.7"/>
+    </svg>
+    <svg class="reel right" viewBox="0 0 64 64" aria-hidden="true">
+      <circle cx="32" cy="32" r="30" fill="none" stroke="#f0b93d" stroke-width="3" opacity="0.7"/>
+      <circle cx="32" cy="32" r="6" fill="#f0b93d" opacity="0.7"/>
+      <circle cx="32" cy="10" r="6" fill="#f0b93d" opacity="0.7"/>
+      <circle cx="32" cy="54" r="6" fill="#f0b93d" opacity="0.7"/>
+      <circle cx="10" cy="32" r="6" fill="#f0b93d" opacity="0.7"/>
+      <circle cx="54" cy="32" r="6" fill="#f0b93d" opacity="0.7"/>
+    </svg>
+
+    <div class="ticket">
+      <!-- FRONT: the ask -->
+      <div id="ticketFront">
+        <div class="stub">
+          <p class="eyebrow">Feature Presentation · Tonight</p>
+          <h1 class="headline" id="headlinePlain"></h1>
+          <span class="neon" id="headlineNeon"></span>
+          <p class="subtext" id="subtextEl"></p>
+          <div class="lineup">
+            <button type="button" class="lineup-chip" id="movie1"></button>
+            <button type="button" class="lineup-chip" id="movie2"></button>
+          </div>
+          <p class="lineup-msg" id="lineupMsg">&nbsp;</p>
+          <p class="lineup-note">tonight's lineup · go ahead, try to change it</p>
+        </div>
+
+        <div class="perf"></div>
+
+        <div class="info">
+          <div class="stage" id="stage">
+            <button id="yesBtn" type="button">Yes, I'm in 🎬</button>
+            <button id="noBtn" type="button">Not now</button>
+          </div>
+          <p class="dodge-msg" id="dodgeMsg">&nbsp;</p>
+          <div class="barcode" aria-hidden="true"></div>
+          <p class="admit">VIRTUAL SCREENING · LONG DISTANCE EDITION</p>
+        </div>
+      </div>
+
+      <!-- BACK: confirmation -->
+      <div class="confirm" id="confirm">
+        <p class="eyebrow">Confirmed</p>
+        <h2>It's a date 🎬</h2>
+        <p>Shinchan + Bonolota, back to back. Already decided, so nobody's switching it for extra time this round 😏</p>
+        <div class="seats">
+          <span class="seat" id="seatA"></span>
+          <span class="seat" id="seatB"></span>
+        </div>
+        <a class="wc-link" id="wcLink" href="https://www.google.com/search?q=world+cup+live+score" target="_blank" rel="noopener noreferrer">🏆 Score tab, right here</a>
+        <p class="wc-note">Keep it open in the background — no excuses to disappear on me this time.</p>
+        <div class="barcode" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Made with a little bit of popcorn and code</footer>
+
+  <script>
+    // pull in the customizable text from the CSS variables
+    const root = getComputedStyle(document.documentElement);
+    const unquote = s => s.trim().replace(/^"|"$/g, '');
+    document.getElementById('headlinePlain').textContent = unquote(root.getPropertyValue('--headline-plain'));
+    document.getElementById('headlineNeon').textContent = unquote(root.getPropertyValue('--headline-neon'));
+    document.getElementById('subtextEl').textContent = unquote(root.getPropertyValue('--subtext'));
+    const movie1 = document.getElementById('movie1');
+    const movie2 = document.getElementById('movie2');
+    movie1.textContent = '🔒 ' + unquote(root.getPropertyValue('--movie-1'));
+    movie2.textContent = '✓ ' + unquote(root.getPropertyValue('--movie-2'));
+    document.getElementById('seatA').textContent = unquote(root.getPropertyValue('--seat-a'));
+    document.getElementById('seatB').textContent = unquote(root.getPropertyValue('--seat-b'));
+
+    // ---- the lineup is fixed: Shinchan is locked out, Bonolota is confirmed ----
+    const lineupMsg = document.getElementById('lineupMsg');
+    const shinchanLines = [
+      "locked. shinchan's just for the vibes tonight.",
+      "nice try, that one's not up for grabs.",
+      "already decided, sit back down.",
+      "you can look, you cannot pick.",
+      "shinchan is decorative tonight, not negotiable.",
+      "still locked. it'll stay locked."
+    ];
+    let shinchanTries = 0;
+    movie1.addEventListener('click', () => {
+      shinchanTries++;
+      lineupMsg.textContent = shinchanLines[(shinchanTries - 1) % shinchanLines.length];
+      movie1.classList.remove('shake');
+      void movie1.offsetWidth;
+      movie1.classList.add('shake');
+    });
+    movie2.addEventListener('click', () => {
+      lineupMsg.textContent = "yep, that one's confirmed 💛";
+      movie2.classList.remove('pulse');
+      void movie2.offsetWidth;
+      movie2.classList.add('pulse');
+    });
+
+    // ---- marquee chasing lights ----
+    const frame = document.getElementById('frame');
+    const counts = { top: 9, right: 5, bottom: 9, left: 5 };
+    let i = 0;
+    const placeBulb = (side, t) => {
+      const b = document.createElement('div');
+      b.className = 'bulb';
+      if (side === 'top'){ b.style.left = (t*100)+'%'; b.style.top = '0%'; b.style.transform='translate(-50%,-50%)'; }
+      if (side === 'bottom'){ b.style.left = (t*100)+'%'; b.style.top = '100%'; b.style.transform='translate(-50%,-50%)'; }
+      if (side === 'left'){ b.style.top = (t*100)+'%'; b.style.left = '0%'; b.style.transform='translate(-50%,-50%)'; }
+      if (side === 'right'){ b.style.top = (t*100)+'%'; b.style.left = '100%'; b.style.transform='translate(-50%,-50%)'; }
+      b.style.animationDelay = (i*0.07)+'s';
+      i++;
+      frame.appendChild(b);
+    };
+    for(let n=0;n<counts.top;n++) placeBulb('top', n/(counts.top-1));
+    for(let n=0;n<counts.right;n++) placeBulb('right', n/(counts.right-1));
+    for(let n=0;n<counts.bottom;n++) placeBulb('bottom', n/(counts.bottom-1));
+    for(let n=0;n<counts.left;n++) placeBulb('left', n/(counts.left-1));
+
+    // ---- the "Not now" button dodges ----
+    const stage = document.getElementById('stage');
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const dodgeMsg = document.getElementById('dodgeMsg');
+
+    const lines = [
+      "nice try.",
+      "the popcorn's getting cold.",
+      "it's just a movie, not a deposition.",
+      "okay but seriously, yes is right there.",
+      "this button has trust issues.",
+      "still a no? bold.",
+      "the seats are getting lonely.",
+      "you can keep trying, it won't stop."
+    ];
+    let dodgeCount = 0;
+
+    function dodge(){
+      const sBounds = stage.getBoundingClientRect();
+      const bBounds = noBtn.getBoundingClientRect();
+      if (!noBtn.classList.contains('roaming')){
+        noBtn.classList.add('roaming');
+      }
+      const maxX = sBounds.width - bBounds.width;
+      const maxY = sBounds.height - bBounds.height;
+      const x = Math.max(0, Math.random() * maxX);
+      const y = Math.max(0, Math.random() * maxY);
+      noBtn.style.left = x + 'px';
+      noBtn.style.top = y + 'px';
+
+      dodgeCount++;
+      dodgeMsg.textContent = lines[(dodgeCount - 1) % lines.length];
+      const scale = Math.min(1.35, 1 + dodgeCount * 0.035);
+      yesBtn.style.transform = `scale(${scale})`;
+    }
+
+    noBtn.addEventListener('mouseenter', dodge);
+    noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); dodge(); }, { passive:false });
+    noBtn.addEventListener('click', (e) => { e.preventDefault(); dodge(); });
+
+    // ---- yes! ----
+    const ticketFront = document.getElementById('ticketFront');
+    const confirm = document.getElementById('confirm');
+
+    function confettiBurst(){
+      const emojis = ['🎬','🍿','✨','🎟️','❤️'];
+      for(let n=0;n<36;n++){
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+        piece.style.left = Math.random()*100 + 'vw';
+        piece.style.animationDuration = (2.2 + Math.random()*1.6) + 's';
+        piece.style.animationDelay = (Math.random()*0.4) + 's';
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 4200);
+      }
+    }
+
+    yesBtn.addEventListener('click', () => {
+      ticketFront.style.display = 'none';
+      confirm.classList.add('show');
+      confettiBurst();
+    });
+  </script>
+
+</body>
+</html>
