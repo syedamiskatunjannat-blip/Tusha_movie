@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Date? 🎬</title>
+    <style>
+        :root {
+            --primary: #ff4757;
+            --primary-hover: #ff6b81;
+            --bg: #ffeef2;
+            --card-bg: #ffffff;
+            --text: #2f3542;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255, 71, 87, 0.1);
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #747d8c;
+            margin-bottom: 25px;
+        }
+
+        .gif-container {
+            width: 100%;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 4rem;
+        }
+
+        /* Screen 1: The Initial Question */
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            position: relative;
+            height: 50px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-yes {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+        }
+
+        .btn-yes:hover {
+            background-color: var(--primary-hover);
+            transform: scale(1.05);
+        }
+
+        .btn-no {
+            background-color: #ced6e0;
+            color: #57606f;
+            position: absolute;
+        }
+
+        /* Screen 2: Movie Selection */
+        .movie-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .movie-card {
+            border: 2px solid #f1f2f6;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        .movie-card.selected {
+            border-color: var(--primary);
+            background-color: #fff0f3;
+        }
+
+        .movie-card.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: #f1f2f6;
+        }
+
+        .movie-icon {
+            font-size: 2.5rem;
+        }
+
+        .movie-title {
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        .badge {
+            background: #747d8c;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            position: absolute;
+            top: -8px;
+        }
+
+        .badge.locked {
+            background: #ff4757;
+        }
+
+        /* Screen 3: World Cup Compromise */
+        .final-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .wc-btn {
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            color: white;
+            text-decoration: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(42, 82, 152, 0.4);
+            margin-top: 10px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="mainContainer">
+        <!-- SCREEN 1: ARE YOU UP? -->
+        <div id="screen1">
+            <div class="gif-container">🍿✨</div>
+            <h1>Are you up for a movie date?</h1>
+            <p class="subtitle">Please say yes, I miss you! 💕</p>
+            
+            <div class="btn-group">
+                <button class="btn-yes" onclick="nextScreen(2)">Yes! 😍</button>
+                <button class="btn-no" id="noBtn" onmouseover="dodge()" onclick="dodge()">No, sleeping 😴</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: MOVIE PICKER -->
+        <div id="screen2" class="hidden">
+            <div class="gif-container">🎬👀</div>
+            <h1>Pick what we're watching!</h1>
+            <p class="subtitle">Choose wisely... (or maybe you don't have a choice)</p>
+
+            <div class="movie-options">
+                <!-- Shinchan (Locked) -->
+                <div class="movie-card disabled" onclick="alert('Nice try! Shinchan is off-limits today 😜 Picker\'s privilege!')">
+                    <span class="badge locked">Locked By Me🔒</span>
+                    <div class="movie-icon">👦🔴</div>
+                    <div class="movie-title">Shinchan Movie</div>
+                </div>
+
+                <!-- Bonolota (Selectable) -->
+                <div class="movie-card" id="bonolotaCard" onclick="selectMovie()">
+                    <span class="badge" style="background: #2ed573;">Perfect Choice ✨</span>
+                    <div class="movie-icon">🌳📖</div>
+                    <div class="movie-title">Bonolota</div>
+                </div>
+            </div>
+
+            <button class="btn-yes hidden" id="movieSubmitBtn" onclick="nextScreen(3)" style="margin-top: 25px; width: 100%;">Confirm Movie 🍿</button>
+        </div>
+
+        <!-- SCREEN 3: WORLD CUP COMPROMISE -->
+        <div id="screen3" class="hidden">
+            <div class="gif-container">⚽🏆🎉</div>
+            <h1>It's a Date! ❤️</h1>
+            <p class="subtitle" style="margin-bottom: 15px;">We are watching <b>Bonolota</b> together! BUT...</p>
+            
+            <div class="final-card">
+                <p>Because I know you love your football/cricket games and I'm the best girlfriend ever, here is your quick shortcut to check the <b>World Cup</b> match first! 😉</p>
+                
+                <a href="https://www.google.com/search?q=world+cup+live+score" target="_blank" class="wc-btn">
+                    <span>⚽</span> Stream / Check World Cup Match
+                </a>
+                
+                <p style="font-size: 0.85rem; color: #747d8c; margin-top: 10px;">Check the scores, then call me for our movie night! See you on FaceTime/Zoom! 💋</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const container = document.getElementById('mainContainer');
+
+        // Set initial position for No button so absolute positioning works cleanly
+        noBtn.style.left = '145px';
+        noBtn.style.top = '0px';
+
+        function dodge() {
+            // Get container dimensions to keep the button inside it safely
+            const containerRect = container.getBoundingClientRect();
+            const btnWidth = noBtn.offsetWidth;
+            const btnHeight = noBtn.offsetHeight;
+
+            // Generate safe bounds inside the card
+            const maxX = containerRect.width - btnWidth - 40;
+            const maxY = 120; // limit vertical reach so it stays around the lower section
+
+            const randomX = Math.floor(Math.random() * maxX) + 20;
+            const randomY = Math.floor(Math.random() * maxY) - 30; // allows shifting up and down
+
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+        }
+
+        function nextScreen(screenNum) {
+            document.getElementById('screen1').classList.add('hidden');
+            document.getElementById('screen2').classList.add('hidden');
+            document.getElementById('screen3').classList.add('hidden');
+
+            document.getElementById('screen' + screenNum).classList.remove('hidden');
+        }
+
+        function selectMovie() {
+            document.getElementById('bonolotaCard').classList.add('selected');
+            document.getElementById('movieSubmitBtn').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
